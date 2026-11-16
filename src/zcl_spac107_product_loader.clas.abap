@@ -18,7 +18,9 @@ PUBLIC
 ENDCLASS.
 
 
-CLASS zcl_spac107_product_loader IMPLEMENTATION.
+
+CLASS ZCL_SPAC107_PRODUCT_LOADER IMPLEMENTATION.
+
 
   METHOD if_oo_adt_classrun~main.
 
@@ -56,6 +58,7 @@ CLASS zcl_spac107_product_loader IMPLEMENTATION.
 
     r_output = |Inserted { sy-dbcnt } entries into table.|.
   ENDMETHOD.
+
 
   METHOD cleanup.
     DELETE FROM  zspac107_product .

@@ -18,19 +18,8 @@ CLASS zcl_spac107_data_loader DEFINITION
 ENDCLASS.
 
 
-CLASS zcl_spac107_data_loader IMPLEMENTATION.
 
-  METHOD if_oo_adt_classrun~main.
-
-    out->write( cleanup(  ) ).
-
-    TRY.
-      out->write( fill_stock_table(  ) ).
-    CATCH cx_sy_open_sql_db INTO DATA(lx).
-      out->write( |Couldn't write entries to table. Error: { lx->get_longtext(  ) }| ).
-    ENDTRY.
-
-  ENDMETHOD.
+CLASS ZCL_SPAC107_DATA_LOADER IMPLEMENTATION.
 
 
   METHOD fill_stock_table.
@@ -65,6 +54,7 @@ CLASS zcl_spac107_data_loader IMPLEMENTATION.
     r_output = |Inserted { sy-dbcnt } entries into table.|.
   ENDMETHOD.
 
+
   METHOD cleanup.
     DELETE FROM  zspac107_stock .
 
@@ -75,5 +65,18 @@ CLASS zcl_spac107_data_loader IMPLEMENTATION.
       COMMIT WORK.
       r_output = |Successfully cleaned up { sy-dbcnt } entries.|.
     ENDIF.
+  ENDMETHOD.
+
+
+  METHOD if_oo_adt_classrun~main.
+
+    out->write( cleanup(  ) ).
+
+    TRY.
+      out->write( fill_stock_table(  ) ).
+    CATCH cx_sy_open_sql_db INTO DATA(lx).
+      out->write( |Couldn't write entries to table. Error: { lx->get_longtext(  ) }| ).
+    ENDTRY.
+
   ENDMETHOD.
 ENDCLASS.

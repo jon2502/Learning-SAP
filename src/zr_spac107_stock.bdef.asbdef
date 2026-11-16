@@ -30,4 +30,9 @@ etag master LastChangedAt
     LastChangedAt = last_changed_at;
     LocalLastChangedAt = local_last_changed_at;
   }
+
+  validation validateWarehouseID on save {create; update;}
+  validation validateProductID on save {create; update;}
+  validation stockAmount on save {create; update;}
+
 }
