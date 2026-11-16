@@ -12,7 +12,19 @@
      <SPRSL>E</SPRSL>
      <ARBGB>ZM_SPAC_B_107</ARBGB>
      <MSGNR>001</MSGNR>
-     <TEXT>test</TEXT>
+     <TEXT>No warehouse found with selected ID</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZM_SPAC_B_107</ARBGB>
+     <MSGNR>002</MSGNR>
+     <TEXT>No product found with selected ID</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZM_SPAC_B_107</ARBGB>
+     <MSGNR>003</MSGNR>
+     <TEXT>Amount cant be a negative value</TEXT>
     </T100>
    </T100>
   </asx:values>

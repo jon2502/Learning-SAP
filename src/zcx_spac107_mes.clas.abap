@@ -10,7 +10,7 @@ PUBLIC
       if_abap_behv_message.
 
      CONSTANTS:
-     message_class TYPE symsgid VALUE 'Z_SPAC105_M_B',
+     message_class TYPE symsgid VALUE 'ZM_SPAC_B_107',
 
      BEGIN OF warehouse_id_invalid,
         msgid TYPE symsgid VALUE message_class,
@@ -28,7 +28,16 @@ PUBLIC
         attr2 TYPE scx_attrname VALUE '',
         attr3 TYPE scx_attrname VALUE '',
         attr4 TYPE scx_attrname VALUE '',
-     END OF product_id_invalid.
+     END OF product_id_invalid,
+
+     BEGIN OF invalid_product_amount,
+        msgid TYPE symsgid VALUE message_class,
+        msgno TYPE symsgno VALUE '003',
+        attr1 TYPE scx_attrname VALUE '',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+     END OF invalid_product_amount.
 
     DATA:
       mv_warehouse_id TYPE ZSPAC105_STOCK-warehouse_Id,
