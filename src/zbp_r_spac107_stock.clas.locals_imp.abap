@@ -2,6 +2,7 @@ CLASS lhc_ZR_SPAC107_STOCK DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PUBLIC SECTION.
     CONSTANTS state_validate_warehouseID TYPE String VALUE 'VALIDATE_WAREHOUSE_ID'.
     CONSTANTS state_validate_productID TYPE String VALUE 'VALIDATE_PRODUCT_ID'.
+    CONSTANTS state_validate_product_amount TYPE string VALUE 'VALIDATE_PRODUCT_AMOUNT'.
 
   PRIVATE SECTION.
 
@@ -14,6 +15,11 @@ CLASS lhc_ZR_SPAC107_STOCK DEFINITION INHERITING FROM cl_abap_behavior_handler.
       keys FOR zr_spac107_stock~validatewarehouseid.
     METHODS validateStockAmount FOR VALIDATE ON SAVE
       keys FOR zr_spac107_stock~validateStockAmount.
+    METHODS precheck_create FOR PRECHECK
+      entities FOR CREATE ZR_SPAC107_STOCK.
+
+    METHODS precheck_update FOR PRECHECK
+      entities FOR UPDATE ZR_SPAC107_STOCK.
 
 ENDCLASS.
 
@@ -101,6 +107,46 @@ CLASS lhc_ZR_SPAC107_STOCK IMPLEMENTATION.
 
 
   METHOD validateStockAmount.
+      READ ENTITIES OF zr_spac107_stock IN LOCAL MODE
+        ENTITY zr_spac107_stock
+        FIELDS ( Amount )
+        WITH CORRESPONDING #(  keys )
+        RESULT DATA(Amount_Check).
+
+        LOOP AT Amount_Check INTO DATA(amount).
+            if amount-Amount < 0.
+                        APPEND VALUE #(  %tky = amount-%tky ) TO failed-zr_spac107_stock.
+                        APPEND VALUE #( %tky                 = amount-%tky
+                        %state_area          = state_validate_product_amount
+                        %msg                 = NEW zcx_spac107_mes( textid      = zcx_spac107_mes=>invalid_product_amount )
+                        %element-Amount = if_abap_behv=>mk-on )
+               TO reported-zr_spac107_stock.
+            ENDIF.
+        ENDLOOP.
+  ENDMETHOD.
+
+  METHOD precheck_create.
+  ENDMETHOD.
+
+  METHOD precheck_update.
+     LOOP AT entities ASSIGNING FIELD-SYMBOL(<lfs_entity>).
+     IF <lfs_entity>-Amount < 0.
+
+      APPEND VALUE #(
+        %tky = <lfs_entity>-%tky
+      ) TO failed-zr_spac107_stock.
+
+      APPEND VALUE #(
+        %tky        = <lfs_entity>-%tky
+        %state_area = state_validate_product_amount
+        %msg        = NEW zcx_spac107_mes(
+                        textid = zcx_spac107_mes=>invalid_product_amount )
+        %element-Amount = if_abap_behv=>mk-on
+      ) TO reported-zr_spac107_stock.
+
+    ENDIF.
+
+     ENDLOOP.
   ENDMETHOD.
 
 ENDCLASS.
