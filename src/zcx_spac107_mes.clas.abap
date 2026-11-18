@@ -50,8 +50,8 @@ PUBLIC
           textid       LIKE if_t100_message=>t100key         OPTIONAL
           previous     LIKE previous                         OPTIONAL
           severity     TYPE if_abap_behv_message=>t_severity DEFAULT  if_abap_behv_message=>severity-error
-          warehouseID TYPE ZSPAC105_STOCK-warehouse_Id OPTIONAL
-          productID TYPE ZSPAC105_STOCK-product_Id OPTIONAL
+          warehouseID TYPE ZSPAC107_STOCK-warehouse_Id OPTIONAL
+          productID TYPE ZSPAC107_STOCK-product_Id OPTIONAL
             PREFERRED PARAMETER textid
         .
 

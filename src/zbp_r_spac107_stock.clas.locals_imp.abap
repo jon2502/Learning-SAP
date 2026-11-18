@@ -15,9 +15,6 @@ CLASS lhc_ZR_SPAC107_STOCK DEFINITION INHERITING FROM cl_abap_behavior_handler.
       keys FOR zr_spac107_stock~validatewarehouseid.
     METHODS validateStockAmount FOR VALIDATE ON SAVE
       keys FOR zr_spac107_stock~validateStockAmount.
-    METHODS precheck_create FOR PRECHECK
-      entities FOR CREATE ZR_SPAC107_STOCK.
-
     METHODS precheck_update FOR PRECHECK
       entities FOR UPDATE ZR_SPAC107_STOCK.
 
@@ -123,9 +120,6 @@ CLASS lhc_ZR_SPAC107_STOCK IMPLEMENTATION.
                TO reported-zr_spac107_stock.
             ENDIF.
         ENDLOOP.
-  ENDMETHOD.
-
-  METHOD precheck_create.
   ENDMETHOD.
 
   METHOD precheck_update.

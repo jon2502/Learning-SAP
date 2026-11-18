@@ -9,7 +9,7 @@ lock master total etag LastChangedAt
 authorization master ( instance )
 etag master LastChangedAt
 {
-  create ( precheck );
+  create;
   update ( precheck );
   delete;
 
