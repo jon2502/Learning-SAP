@@ -10,6 +10,7 @@ define root view entity ZC_SPAC107_PRODUCT
   ProductName,
   ProductDesctiption,
   Price,
+  ProductImage,
   CreatedBy,
   CreatedAt,
   LastChangedBy,

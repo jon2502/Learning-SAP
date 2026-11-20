@@ -1,0 +1,4 @@
+@EndUserText.label: 'Service Definition for API'
+define service ZUI_SPAC107_STOCK_O4_API {
+  expose ZCAPI_SPAC107_PRODUCT as ProductAPI;
+}

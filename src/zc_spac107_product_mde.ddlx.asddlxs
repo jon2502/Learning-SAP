@@ -37,4 +37,7 @@ annotate entity ZC_SPAC107_PRODUCT with
   @UI.lineItem: [{ position: 40, label: 'Price' }]
   @UI.identification: [{ position: 40, label: 'Price' }]
   Price;
+  @UI.lineItem: [{ position: 50, label: 'ProductImage' }]
+  @UI.identification: [{ position: 50, label: 'ProductImage' }]
+  ProductImage;
 }

@@ -7,6 +7,7 @@ define root view entity ZR_SPAC107_PRODUCT as select from zspac107_product
     product_name as ProductName,
     product_desctiption as ProductDesctiption,
     price as Price,
+    product_image as ProductImage,
     @Semantics.user.createdBy: true
     local_created_by as CreatedBy,
     @Semantics.systemDateTime.createdAt: true

@@ -41,13 +41,16 @@ CLASS ZCL_SPAC107_PRODUCT_LOADER IMPLEMENTATION.
           result_table TYPE TABLE OF zspac107_product.
     .
     temp_table = VALUE #(
-      ( product_id = 1 product_name = 'Intercessor Squad' product_desctiption = 'Intercessors are tough, flexible, highly skilled, and capable of laying down withering hails of fire. Bolt rifles booming' price = 410 )
-      ( product_id = 2 product_name = 'Assault Intercessors with Jump Packs'  product_desctiption = 'Assault Intercessors with Jump Packs soar over the battlefield, slamming into the foe like a hammer from the skies.' price = 390 )
-      ( product_id = 3 product_name = 'Brutalis Dreadnought'  product_desctiption = 'The Brutalis Dreadnought is a line breaker and a terror weapon – a bipedal combat walker armed for close combat and piloted by a fallen hero of its Chapter' price = 540 )
+      ( product_id = 1 product_name = 'Intercessor Squad' product_desctiption = 'Intercessors are tough, flexible, highly skilled, and capable of laying down withering hails of fire. Bolt rifles booming' price = 410
+      product_image = 'Images/SpaceMarinesIntercessorSquad01.jpg' )
+      ( product_id = 2 product_name = 'Assault Intercessors with Jump Packs'  product_desctiption = 'Assault Intercessors with Jump Packs soar over the battlefield, slamming into the foe like a hammer from the skies.' price = 390
+      product_image = 'Images/SMJumpPkIntercessors2.jpg' )
+      ( product_id = 3 product_name = 'Brutalis Dreadnought'  product_desctiption = 'The Brutalis Dreadnought is a line breaker and a terror weapon – a bipedal combat walker armed for close combat and piloted by a fallen hero of its Chapter' price = 540
+      product_image = 'Images/SMBrutlisDread1.jpg' )
       ( product_id = 4 product_name = 'Captain on Bike'  product_desctiption = 'Some Space Marine Captains ride to war on Raider-pattern bikes. This is common among the White Scars and Blood Angels,'
-      && 'who prize speed and swift armoured strikes most highly.' price = 365 )
+      && 'who prize speed and swift armoured strikes most highly.' price = 365 product_image = 'SpaceMarinesCaptainOnBike01' )
       ( product_id = 5 product_name = 'Kill Team: Deathwatch'  product_desctiption = 'The Deathwatch are a Space Marine Chapter unlike any other – tasked with ruthlessly hunting down and destroying the xenos menace at the bidding of the Inquisition'
-      price = 435 )
+      price = 435 product_image = 'KTDeathwatch01' )
     ).
 
     TRY.

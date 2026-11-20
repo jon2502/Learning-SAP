@@ -28,6 +28,7 @@ etag master LastChangedAt
     ProductName = product_name;
     ProductDesctiption = product_desctiption;
     Price = price;
+    ProductImage = product_image;
     CreatedBy = local_created_by;
     CreatedAt = local_created_at;
     LastChangedBy = local_last_changed_by;
