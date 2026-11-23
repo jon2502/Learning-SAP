@@ -1,0 +1,78 @@
+managed implementation in class zbp_r_spac107_order unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZR_SPAC107_ORDER alias Order
+persistent table zspac107_order
+draft table zspac107_d_order
+lock master
+total etag LastChangedAt
+authorization master ( instance )
+etag master LastChangedAt
+{
+  create;
+  update;
+  delete;
+
+  association _OrderItems {create;}
+
+
+  field ( readonly )
+    OrderId,
+    TotalPrice,
+    Status,
+    CreatedBy,
+    CreatedAt,
+    LastChangedBy,
+    LastChangedAt,
+    LocalLastChangedAt;
+
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Edit;
+  draft action Resume;
+  draft determine action Prepare;
+
+  static action addToCart parameter ZA_ADD_TO_CART_PARAM result [0..*] $self;
+  static action checkoutCart parameter ZA_CHECKOUT_PARAM result [0..*] $self;
+  action cancelOrder result [0..*] $self;
+  action markShipped result [0..*] $self;
+
+  mapping for zspac107_order {
+    OrderId = order_id;
+    UserId = user_id;
+    Status = status;
+    StreetAddress = street_address;
+    PostalCode = postal_code;
+    City = city;
+    Country = country;
+    CreatedBy = local_created_by;
+    CreatedAt = local_created_at;
+    LastChangedBy = local_last_changed_by;
+    LastChangedAt = last_changed_at;
+    LocalLastChangedAt = local_last_changed_at;
+  }
+
+ }
+
+define behavior for ZR_SPAC107_ORDER_I alias OrderItem
+persistent table zspac107_order_i
+draft table zspac107_d_ord_i
+lock dependent by _Order
+authorization dependent by _Order
+{
+
+    update;
+    delete;
+
+    field ( readonly ) OrderId, Price;
+
+    association _Order;
+
+     mapping for zspac107_order_i {
+        OrderId   = order_id;
+        ProductId = product_id;
+        Amount    = amount;
+        Price     = price;
+    }
+}

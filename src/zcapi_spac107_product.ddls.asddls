@@ -7,10 +7,5 @@ define root view entity ZCAPI_SPAC107_PRODUCT as projection on ZR_SPAC107_PRODUC
     ProductName,
     ProductDesctiption,
     Price,
-    ProductImage,
-    CreatedBy,
-    CreatedAt,
-    LastChangedBy,
-    LastChangedAt,
-    LocalLastChangedAt
+    ProductImage
 }

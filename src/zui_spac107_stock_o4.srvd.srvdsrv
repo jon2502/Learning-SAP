@@ -3,4 +3,5 @@ define service ZUI_SPAC107_STOCK_O4 {
   expose ZC_SPAC107_STOCK   as Stock;
   expose ZC_SPAC107_PRODUCT as Product;
   expose ZC_SPAC107_LOC     as WareHouses;
+  expose ZC_SPAC107_ORDER   as orders;
 }
