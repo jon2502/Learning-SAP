@@ -7,16 +7,19 @@ CLASS lhc_ZR_SPAC107_STOCK DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
 
     METHODS get_instance_authorizations FOR INSTANCE AUTHORIZATION
-      keys REQUEST requested_authorizations FOR zr_spac107_stock RESULT result.
+      keys REQUEST requested_authorizations FOR Stock RESULT result.
     METHODS validateproductid FOR VALIDATE ON SAVE
-      keys FOR zr_spac107_stock~validateproductid.
+      keys FOR Stock~validateproductid.
 
     METHODS validatewarehouseid FOR VALIDATE ON SAVE
-      keys FOR zr_spac107_stock~validatewarehouseid.
+      keys FOR Stock~validatewarehouseid.
     METHODS validateStockAmount FOR VALIDATE ON SAVE
-      keys FOR zr_spac107_stock~validateStockAmount.
+      keys FOR Stock~validateStockAmount.
     METHODS precheck_update FOR PRECHECK
       entities FOR UPDATE ZR_SPAC107_STOCK.
+     METHODS updateStock FOR MODIFY
+          IMPORTING keys FOR ACTION Stock~updateStock
+          RESULT result.
 
 ENDCLASS.
 
@@ -47,18 +50,18 @@ CLASS lhc_ZR_SPAC107_STOCK IMPLEMENTATION.
     LOOP AT ID_check INTO DATA(product).
       APPEND VALUE #( %tky        = product-%tky
                       %state_area = state_validate_productID )
-             TO reported-zr_spac107_stock.
+             TO reported-stock.
 
       IF        product-productid IS INITIAL
          OR NOT line_exists( product_db[ productid = product-ProductId ] ).
 
-        APPEND VALUE #(  %tky = product-%tky ) TO failed-zr_spac107_stock.
+        APPEND VALUE #(  %tky = product-%tky ) TO failed-stock.
         APPEND VALUE #( %tky                 = product-%tky
                         %state_area          = state_validate_productID
                         %msg                 = NEW  zcx_spac107_mes( textid      =  zcx_spac107_mes=>product_id_invalid
                                                                    productID = product-productid )
                         %element-productid = if_abap_behv=>mk-on )
-               TO reported-zr_spac107_stock.
+               TO reported-stock.
       ENDIF.
     ENDLOOP.
   ENDMETHOD.
@@ -85,18 +88,18 @@ CLASS lhc_ZR_SPAC107_STOCK IMPLEMENTATION.
     LOOP AT ID_check INTO DATA(warehouse).
       APPEND VALUE #( %tky        = warehouse-%tky
                       %state_area = state_validate_warehouseID )
-             TO reported-zr_spac107_stock.
+             TO reported-stock.
 
       IF        warehouse-WarehouseId IS INITIAL
          OR NOT line_exists( warehouse_db[ warehouseid = warehouse-WarehouseId ] ).
 
-        APPEND VALUE #(  %tky = warehouse-%tky ) TO failed-zr_spac107_stock.
+        APPEND VALUE #(  %tky = warehouse-%tky ) TO failed-stock.
         APPEND VALUE #( %tky                 = warehouse-%tky
                         %state_area          = state_validate_warehouseID
                         %msg                 = NEW zcx_spac107_mes( textid      = zcx_spac107_mes=>warehouse_id_invalid
                                                                    warehouseID = warehouse-WarehouseId )
                         %element-warehouseid = if_abap_behv=>mk-on )
-               TO reported-zr_spac107_stock.
+               TO reported-stock.
       ENDIF.
     ENDLOOP.
   ENDMETHOD.
@@ -112,12 +115,12 @@ CLASS lhc_ZR_SPAC107_STOCK IMPLEMENTATION.
 
         LOOP AT Amount_Check INTO DATA(amount).
             if amount-Amount < 0.
-                        APPEND VALUE #(  %tky = amount-%tky ) TO failed-zr_spac107_stock.
+                        APPEND VALUE #(  %tky = amount-%tky ) TO failed-stock.
                         APPEND VALUE #( %tky                 = amount-%tky
                         %state_area          = state_validate_product_amount
                         %msg                 = NEW zcx_spac107_mes( textid      = zcx_spac107_mes=>invalid_product_amount )
                         %element-Amount = if_abap_behv=>mk-on )
-               TO reported-zr_spac107_stock.
+               TO reported-stock.
             ENDIF.
         ENDLOOP.
   ENDMETHOD.
@@ -128,7 +131,7 @@ CLASS lhc_ZR_SPAC107_STOCK IMPLEMENTATION.
 
       APPEND VALUE #(
         %tky = <lfs_entity>-%tky
-      ) TO failed-zr_spac107_stock.
+      ) TO failed-stock.
 
       APPEND VALUE #(
         %tky        = <lfs_entity>-%tky
@@ -136,11 +139,30 @@ CLASS lhc_ZR_SPAC107_STOCK IMPLEMENTATION.
         %msg        = NEW zcx_spac107_mes(
                         textid = zcx_spac107_mes=>invalid_product_amount )
         %element-Amount = if_abap_behv=>mk-on
-      ) TO reported-zr_spac107_stock.
+      ) TO reported-stock.
 
     ENDIF.
 
      ENDLOOP.
+  ENDMETHOD.
+
+  METHOD updateStock.
+     LOOP AT keys INTO DATA(key).
+        DATA(lv_productid)    = key-ProductId.
+        DATA(lv_amount)     = key-%param-Amount.
+    ENDLOOP.
+
+    SELECT SINGLE FROM zspac107_stock
+      FIELDS warehouse_id, amount
+      WHERE product_id = @key-ProductId
+        AND amount >= @key-%param-Amount
+      INTO @DATA(ls_stock).
+
+    IF sy-subrc = 0.
+    ELSE.
+    ENDIF.
+
+
   ENDMETHOD.
 
 ENDCLASS.

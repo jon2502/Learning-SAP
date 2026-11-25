@@ -2,7 +2,7 @@ managed implementation in class ZBP_R_SPAC107_STOCK unique;
 strict ( 2 );
 with draft;
 
-define behavior for ZR_SPAC107_STOCK //alias <alias_name>
+define behavior for ZR_SPAC107_STOCK alias Stock
 persistent table ZSPAC107_STOCK
 draft table ZSPAC107_STOCK_D
 lock master total etag LastChangedAt
@@ -34,6 +34,8 @@ etag master LastChangedAt
     LastChangedAt = last_changed_at;
     LocalLastChangedAt = local_last_changed_at;
   }
+
+  action updateStock parameter ZA_STOCK_UPDATE_PARAM result [0..*] $self;
 
   validation validateWarehouseID on save {create; update;}
   validation validateProductID on save {create; update;}

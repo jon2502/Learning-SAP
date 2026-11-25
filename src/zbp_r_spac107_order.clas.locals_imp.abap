@@ -16,6 +16,14 @@ CLASS lhc_ZR_SPAC107_ORDER DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS markShipped FOR MODIFY
        keys FOR ACTION Order~markShipped RESULT result.
 
+    METHODS createOrderItem
+      IMPORTING
+        lv_key  TYPE abp_behv_cid
+        lv_order_id   TYPE zspac107_order-order_id
+        lv_product_id TYPE zspac107_order_i-product_id
+        lv_amount     TYPE zspac107_order_i-amount
+        lv_product_price      TYPE zspac107_order_i-price.
+
 ENDCLASS.
 
 CLASS lhc_ZR_SPAC107_ORDER IMPLEMENTATION.
@@ -54,6 +62,53 @@ CLASS lhc_ZR_SPAC107_ORDER IMPLEMENTATION.
                 )
                 RESULT DATA(lt_order).
 
+                READ ENTITIES OF ZR_SPAC107_ORDER IN LOCAL MODE
+                ENTITY Order
+                BY \_OrderItems
+                ALL FIELDS
+                WITH VALUE #(
+                    (
+                        OrderId = lv_order_id
+                    )
+                )
+                RESULT DATA(lt_order_items).
+
+
+                IF line_exists( lt_order_items[ ProductId = lv_product_id ] ).
+                  DATA(lv_price_difference) = lv_product_price * lv_amount - lt_order_items[ ProductId = lv_product_id ]-Price.
+
+                      MODIFY ENTITIES OF ZR_SPAC107_ORDER IN LOCAL MODE
+                      ENTITY Order
+                      UPDATE FIELDS ( TotalPrice )
+                      WITH VALUE #(
+                        ( %key-OrderId = lv_order_id
+                          TotalPrice      =  lt_order[ 1 ]-TotalPrice + lv_price_difference )
+                      ).
+                      MODIFY ENTITIES OF ZR_SPAC107_ORDER IN LOCAL MODE
+                      ENTITY Order
+                      CREATE BY \_OrderItems
+                      FIELDS ( Amount Price )
+                      WITH VALUE #(
+                        (
+                             OrderId = lv_order_id
+                             %target = VALUE #(
+                            (
+                              Amount    = lv_amount
+                              Price     = lv_product_price * lv_amount
+                            )
+                          )
+                        )
+                     ).
+                ELSE.
+                  createOrderItem(
+                    lv_key = key-%cid
+                    lv_order_id   = lv_order_id
+                    lv_product_id = lv_product_id
+                    lv_amount     = lv_amount
+                    lv_product_price      = lv_product_price
+                  ).
+                ENDIF.
+
             ELSE.
 
             SELECT order_id
@@ -78,33 +133,23 @@ CLASS lhc_ZR_SPAC107_ORDER IMPLEMENTATION.
                   %cid    = key-%cid
                   OrderId = lv_number
                   UserId  = lv_user_id
+                  TotalPrice = lv_product_price
                   Status  = 'CART'
                 )
               )
-                MAPPED DATA(mapped_order).
+              MAPPED DATA(mapped_order).
+
               lv_order_id = mapped_order-order[ 1 ]-OrderId.
 
+              createOrderItem(
+                lv_key = key-%cid
+                lv_order_id   = lv_order_id
+                lv_product_id = lv_product_id
+                lv_amount     = lv_amount
+                lv_product_price      = lv_product_price
+              ).
             ENDIF.
-              MODIFY ENTITIES OF ZR_SPAC107_ORDER IN LOCAL MODE
-                  ENTITY Order
-                  CREATE BY \_OrderItems
-                  FIELDS ( ProductId Amount Price )
-                  WITH VALUE #(
-                    (
-                         OrderId = lv_order_id
-                         %target = VALUE #(
-                        (
-                          %cid      = key-%cid
-                          ProductId = lv_product_id
-                          Amount    = lv_amount
-                          Price     = lv_product_price * lv_amount
-                        )
-                      )
-                    )
-                )
-    MAPPED DATA(mapped_items)
-    FAILED DATA(failed_items)
-    REPORTED DATA(reported_items).
+
   ENDMETHOD.
 
   METHOD cancelOrder.
@@ -148,27 +193,75 @@ CLASS lhc_ZR_SPAC107_ORDER IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD checkoutCart.
+
       LOOP AT keys INTO DATA(key).
         DATA(lv_user_id)    = key-%param-UserId.
       ENDLOOP.
+
       SELECT SINGLE FROM zspac107_order
         FIELDS order_id
         WHERE user_id = @lv_user_id
         AND status = 'CART'
         INTO @DATA(ls_order_id).
+
       IF sy-subrc = 0.
+        READ ENTITIES OF ZR_SPAC107_ORDER IN LOCAL MODE
+          ENTITY Order
+          BY \_OrderItems
+          ALL FIELDS
+          WITH VALUE #(
+            ( OrderId = ls_order_id )
+          )
+          RESULT DATA(lt_order_items).
+
+        LOOP AT lt_order_items INTO DATA(ls_item).
+
+        MODIFY ENTITIES OF ZR_SPAC107_STOCK
+        ENTITY Stock
+        EXECUTE updateStock
+        FROM VALUE #(
+            (
+              %key-ProductId = ls_item-ProductId
+              %param-Amount = ls_item-Amount
+            )
+          ).
+
         MODIFY ENTITIES OF ZR_SPAC107_ORDER IN LOCAL MODE
-  ENTITY Order
-  UPDATE FIELDS ( Status )
-  WITH VALUE #(
-    ( %key-OrderId = ls_order_id
-      Status      = 'ORDERED' )
-  ).
+          ENTITY Order
+          UPDATE FIELDS ( Status )
+          WITH VALUE #(
+            ( %key-OrderId = ls_order_id
+              Status      = 'ORDERED' )
+          ).
+      ENDLOOP.
       ENDIF.
 
   ENDMETHOD.
 
   METHOD markShipped.
+  ENDMETHOD.
+
+  METHOD createOrderItem.
+    MODIFY ENTITIES OF ZR_SPAC107_ORDER IN LOCAL MODE
+      ENTITY Order
+      CREATE BY \_OrderItems
+      FIELDS ( ProductId Amount Price )
+      WITH VALUE #(
+        (
+             OrderId = lv_order_id
+             %target = VALUE #(
+            (
+              %cid      = lv_key
+              ProductId = lv_product_id
+              Amount    = lv_amount
+              Price     = lv_product_price * lv_amount
+            )
+          )
+        )
+    )
+    MAPPED DATA(mapped_items)
+    FAILED DATA(failed_items)
+    REPORTED DATA(reported_items).
   ENDMETHOD.
 
 ENDCLASS.
